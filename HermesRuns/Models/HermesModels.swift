@@ -409,6 +409,77 @@ struct HermesStravaLinkResponse: Decodable {
     let url: String?
 }
 
+struct HermesRunAnalytics: Decodable {
+    let laps: [HermesRunLap]?
+    let elevationProfile: [HermesElevationSample]?
+    let averageCadence: Double?
+    let averageStrideLengthMeters: Double?
+    let cardiacDrift: HermesCardiacDrift?
+    let minElevationMeters: Double?
+    let maxElevationMeters: Double?
+    let debrief: HermesPostRunDebrief?
+}
+
+struct HermesRunLap: Decodable {
+    let lapIndex: Int?
+    let distanceKm: Double?
+    let durationSeconds: Int?
+    let pace: String?
+    let averageHeartRate: Int?
+    let averageCadence: Int?
+    let elevationGainMeters: Double?
+}
+
+struct HermesElevationSample: Decodable {
+    let distanceKm: Double?
+    let elevationMeters: Double?
+}
+
+struct HermesCardiacDrift: Decodable {
+    let driftPercent: Double?
+    let firstHalfAverageHeartRate: Double?
+    let secondHalfAverageHeartRate: Double?
+    let firstHalfPace: String?
+    let secondHalfPace: String?
+}
+
+struct HermesPostRunDebrief: Decodable {
+    let interpretation: String?
+    let readinessScore: Int?
+    let nextDayGuidance: String?
+}
+
+struct HermesRunTelemetry: Decodable {
+    let sampleCount: Int?
+    let resolution: String?
+    let series: [String: HermesTelemetrySeries]?
+    let trainingEffect: HermesTrainingEffect?
+}
+
+struct HermesTelemetrySeries: Decodable {
+    let key: String?
+    let unit: String?
+    let available: Bool?
+    let samples: [HermesTelemetrySample]?
+}
+
+struct HermesTelemetrySample: Decodable {
+    let t: Int?
+    let value: Double?
+    let distanceKm: Double?
+}
+
+struct HermesTrainingEffect: Decodable {
+    let available: Bool?
+    let source: String?
+    let basis: String?
+    let aerobic: Double?
+    let anaerobic: Double?
+    let averageHeartRate: Double?
+    let maxHeartRateBasis: Double?
+    let highIntensityShare: Double?
+}
+
 struct HermesWeatherContext: Decodable {
     let available: Bool?
     let latitude: Double?

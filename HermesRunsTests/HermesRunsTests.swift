@@ -54,4 +54,13 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(status.syncStatus?.status, "RUNNING")
         XCTAssertEqual(status.syncStatus?.importedRuns, 2)
     }
+
+    func testRunAnalyticsDecodesPostRunReviewAndTelemetry() throws {
+        let data = #"{"laps":[{"lapIndex":1,"distanceKm":1.0,"durationSeconds":360,"pace":"6:00 /km","averageHeartRate":145}],"averageCadence":176.0,"averageStrideLengthMeters":1.02,"cardiacDrift":{"driftPercent":3.4},"debrief":{"interpretation":"Controlled aerobic work.","readinessScore":82,"nextDayGuidance":"Keep tomorrow easy."}}"#.data(using: .utf8)!
+        let analytics = try JSONDecoder().decode(HermesRunAnalytics.self, from: data)
+
+        XCTAssertEqual(analytics.laps?.first?.averageHeartRate, 145)
+        XCTAssertEqual(analytics.cardiacDrift?.driftPercent, 3.4)
+        XCTAssertEqual(analytics.debrief?.readinessScore, 82)
+    }
 }

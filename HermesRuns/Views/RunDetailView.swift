@@ -2,7 +2,13 @@ import Foundation
 import SwiftUI
 
 struct RunDetailView: View {
+    @ObservedObject var session: SessionStore
     let run: HermesRun
+
+    @State private var analytics: HermesRunAnalytics?
+    @State private var telemetry: HermesRunTelemetry?
+    @State private var insightsLoading = false
+    @State private var insightsError = ""
 
     var body: some View {
         ScrollView {
@@ -60,7 +66,25 @@ struct RunDetailView: View {
                     }
                 }
 
-                Text("Maps, lap telemetry, heart-rate samples, elevation recalibration, and run deletion remain available in the Hermes web detail route.")
+                if insightsLoading {
+                    ProgressView("Loading post-run review…")
+                        .tint(HermesTheme.coral)
+                        .font(HermesTheme.caption)
+                }
+                if let analytics {
+                    postRunReview(analytics)
+                }
+                if let telemetry {
+                    telemetryReview(telemetry)
+                }
+                if !insightsError.isEmpty {
+                    Text(insightsError)
+                        .font(HermesTheme.caption)
+                        .foregroundStyle(HermesTheme.coral)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Text("Route maps, elevation recalibration, and run deletion remain available in the Hermes web detail route.")
                     .font(HermesTheme.caption)
                     .foregroundStyle(HermesTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -72,6 +96,115 @@ struct RunDetailView: View {
         .background(HermesTheme.paper.ignoresSafeArea())
         .navigationTitle("Run")
         .navigationBarTitleDisplayMode(.inline)
+        .task { await loadInsights() }
+    }
+
+    @ViewBuilder
+    private func postRunReview(_ analytics: HermesRunAnalytics) -> some View {
+        HermesSectionLabel(text: "Post-run review")
+        if let debrief = analytics.debrief {
+            HermesCard(fill: HermesTheme.mint) {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("COACH DEBRIEF")
+                            .font(HermesTheme.section)
+                            .tracking(1)
+                            .foregroundStyle(HermesTheme.mintInk)
+                        Spacer()
+                        if let readiness = debrief.readinessScore {
+                            Text("Readiness \(readiness)")
+                                .font(HermesTheme.caption)
+                                .foregroundStyle(HermesTheme.mintInk)
+                        }
+                    }
+                    if let interpretation = debrief.interpretation, !interpretation.isEmpty {
+                        Text(interpretation)
+                            .font(HermesTheme.body)
+                            .foregroundStyle(HermesTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    if let guidance = debrief.nextDayGuidance, !guidance.isEmpty {
+                        Text(guidance)
+                            .font(HermesTheme.caption)
+                            .foregroundStyle(HermesTheme.mintInk)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+
+        HermesCard {
+            HStack(spacing: 0) {
+                HermesMetric(value: analytics.averageCadence.map { String(format: "%.0f spm", $0) } ?? "—", label: "cadence")
+                HermesMetric(value: analytics.averageStrideLengthMeters.map { String(format: "%.2f m", $0) } ?? "—", label: "stride")
+                HermesMetric(value: analytics.cardiacDrift.map { String(format: "%.1f%%", $0.driftPercent ?? 0) } ?? "—", label: "cardiac drift")
+            }
+        }
+
+        if let laps = analytics.laps, !laps.isEmpty {
+            HermesCard {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("LAP BREAKDOWN")
+                        .font(HermesTheme.section)
+                        .tracking(1)
+                        .foregroundStyle(HermesTheme.coral)
+                    ForEach(Array(laps.prefix(6).enumerated()), id: \.offset) { _, lap in
+                        HStack {
+                            Text("Lap \(lap.lapIndex ?? 0)")
+                                .font(HermesTheme.caption)
+                                .foregroundStyle(HermesTheme.mutedInk)
+                            Spacer()
+                            Text(HermesFormatters.distance(lap.distanceKm))
+                            Text(lap.pace ?? "—")
+                            if let hr = lap.averageHeartRate { Text("\(hr) bpm") }
+                        }
+                        .font(HermesTheme.caption)
+                        .foregroundStyle(HermesTheme.ink)
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func telemetryReview(_ telemetry: HermesRunTelemetry) -> some View {
+        if let effect = telemetry.trainingEffect, effect.available == true {
+            HermesCard {
+                VStack(alignment: .leading, spacing: 12) {
+                    HermesSectionLabel(text: "Training effect")
+                    HStack(spacing: 0) {
+                        HermesMetric(value: effect.aerobic.map { String(format: "%.1f", $0) } ?? "—", label: "aerobic")
+                        HermesMetric(value: effect.anaerobic.map { String(format: "%.1f", $0) } ?? "—", label: "anaerobic")
+                        HermesMetric(value: "\(telemetry.sampleCount ?? 0)", label: "samples")
+                    }
+                    if let basis = effect.source ?? effect.basis {
+                        Text("Source: \(basis.replacingOccurrences(of: "_", with: " "))")
+                            .font(HermesTheme.caption)
+                            .foregroundStyle(HermesTheme.mutedInk)
+                    }
+                }
+            }
+        }
+    }
+
+    private func loadInsights() async {
+        guard let id = run.id else {
+            insightsError = "This run has no server identifier for post-run analysis."
+            return
+        }
+        insightsLoading = true
+        insightsError = ""
+        do {
+            analytics = try await session.fetchRunAnalytics(id: id)
+        } catch {
+            insightsError = error.localizedDescription
+        }
+        do {
+            telemetry = try await session.fetchRunTelemetry(id: id)
+        } catch {
+            if analytics == nil { insightsError = error.localizedDescription }
+        }
+        insightsLoading = false
     }
 
     private func formatted(_ value: Double?, suffix: String) -> String {
@@ -100,6 +233,6 @@ private struct DetailRow: View {
 
 struct RunDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationStack { RunDetailView(run: HermesPreviewFixtures.dashboard.activities[0]) }
+        NavigationStack { RunDetailView(session: SessionStore(previewDashboard: HermesPreviewFixtures.dashboard), run: HermesPreviewFixtures.dashboard.activities[0]) }
     }
 }

@@ -24,7 +24,7 @@ struct RunsView: View {
                 } else {
                     ForEach(Array(runs.enumerated()), id: \.offset) { _, run in
                         NavigationLink {
-                            RunDetailView(run: run)
+                            RunDetailView(session: session, run: run)
                         } label: {
                             RunListRow(run: run)
                         }

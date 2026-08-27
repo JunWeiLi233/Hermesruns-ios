@@ -155,6 +155,14 @@ final class HermesAPIClient {
         try await request(path: "/api/auth/strava/sync-status", token: token)
     }
 
+    func fetchRunAnalytics(token: String, id: Int64) async throws -> HermesRunAnalytics {
+        try await request(path: "/api/activities/\(id)/analytics", token: token)
+    }
+
+    func fetchRunTelemetry(token: String, id: Int64) async throws -> HermesRunTelemetry {
+        try await request(path: "/api/activities/\(id)/telemetry", token: token)
+    }
+
     func logout(token: String) async {
         _ = try? await requestData(path: "/api/auth/logout", method: "POST", token: token)
     }
