@@ -117,6 +117,13 @@ final class SessionStore: ObservableObject {
         profilePreferences = try await apiClient.updateProfilePreferences(token: token, draft: draft)
     }
 
+    func importActivityFiles(_ uploads: [HermesImportUpload]) async throws -> HermesImportResult {
+        guard let token else { throw HermesAPIError.unauthorized }
+        let result = try await apiClient.importActivityFiles(token: token, uploads: uploads)
+        await refreshDashboard()
+        return result
+    }
+
     func saveShoe(_ draft: HermesShoeDraft, id: Int64? = nil) async throws {
         guard let token else { throw HermesAPIError.unauthorized }
         if let id {

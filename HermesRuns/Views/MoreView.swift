@@ -24,6 +24,9 @@ struct MoreView: View {
                 MoreLink(title: "Strava", subtitle: "Connect and sync recent runs", icon: "arrow.triangle.2.circlepath") {
                     StravaSyncView(session: session)
                 }
+                MoreLink(title: "Import data", subtitle: "Bring in GPX, TCX, FIT, or ZIP exports", icon: "square.and.arrow.down") {
+                    ImportDataView(session: session)
+                }
                 MoreLink(title: "Weather", subtitle: "Acclimatization and pace context", icon: "cloud.sun.fill") {
                     WeatherView(session: session)
                 }
@@ -48,7 +51,7 @@ struct MoreView: View {
             }
 
             Section {
-                Text("Admin operations, imports, GPS heatmaps, and race maps remain available in the Hermes web app while their native flows are added.")
+                Text("Admin operations, GPS heatmaps, and race maps remain available in the Hermes web app while their native flows are added.")
                     .font(HermesTheme.caption)
                     .foregroundStyle(HermesTheme.mutedInk)
                     .padding(.vertical, 8)

@@ -28,6 +28,38 @@ struct HermesProfilePreferencesDraft: Encodable {
     let weeklyDigestEnabled: Bool
 }
 
+enum HermesImportProvider: String, CaseIterable, Identifiable, Hashable {
+    case exports
+    case coros
+    case huawei
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .exports: return "FIT / GPX"
+        case .coros: return "COROS"
+        case .huawei: return "HUAWEI"
+        }
+    }
+}
+
+struct HermesImportUpload {
+    let provider: HermesImportProvider
+    let filename: String
+    let data: Data
+}
+
+struct HermesImportResult: Decodable {
+    let provider: String?
+    let importedActivities: Int?
+    let importedPoints: Int?
+    let skippedDuplicates: Int?
+    let skippedNonRuns: Int?
+    let message: String?
+    let rejectedFiles: [String]?
+}
+
 struct HermesTodayDashboard: Decodable {
     let profile: HermesProfile?
     let activities: [HermesRun]

@@ -31,6 +31,21 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(preferences.weeklyDigestEnabled, true)
     }
 
+    func testImportResultDecodesBatchCountsAndRejections() throws {
+        let data = #"{"provider":"IMPORT","importedActivities":3,"importedPoints":120,"skippedDuplicates":1,"skippedNonRuns":0,"message":"Batch import completed.","rejectedFiles":["bad.txt: Unsupported upload file type."]}"#.data(using: .utf8)!
+        let result = try JSONDecoder().decode(HermesImportResult.self, from: data)
+
+        XCTAssertEqual(result.importedActivities, 3)
+        XCTAssertEqual(result.importedPoints, 120)
+        XCTAssertEqual(result.rejectedFiles?.count, 1)
+    }
+
+    func testImportProvidersMatchBackendMultipartFieldNames() {
+        XCTAssertEqual(HermesImportProvider.exports.rawValue, "exports")
+        XCTAssertEqual(HermesImportProvider.coros.rawValue, "coros")
+        XCTAssertEqual(HermesImportProvider.huawei.rawValue, "huawei")
+    }
+
     func testBaseURLNormalizationAddsDevelopmentScheme() {
         XCTAssertEqual(HermesAPIClient.normalizedURL("localhost:8080")?.absoluteString, "http://localhost:8080")
     }

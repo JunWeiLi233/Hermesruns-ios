@@ -78,6 +78,48 @@ final class HermesAPIClient {
         return try await request(path: "/api/profile/preferences", method: "PUT", body: body, token: token)
     }
 
+    func importActivityFiles(token: String, uploads: [HermesImportUpload]) async throws -> HermesImportResult {
+        guard !uploads.isEmpty else {
+            throw HermesAPIError.server("Choose at least one workout file.")
+        }
+        guard uploads.count <= 50 else {
+            throw HermesAPIError.server("Choose no more than 50 files per import.")
+        }
+
+        let boundary = "HermesRuns-\(UUID().uuidString)"
+        var body = Data()
+        var totalBytes = 0
+        let maxFileBytes = 20 * 1024 * 1024
+        let maxBatchBytes = 50 * 1024 * 1024
+
+        for upload in uploads {
+            guard !upload.data.isEmpty, upload.data.count <= maxFileBytes else {
+                throw HermesAPIError.server("Each workout file must be no larger than 20 MB.")
+            }
+            totalBytes += upload.data.count
+            guard totalBytes <= maxBatchBytes else {
+                throw HermesAPIError.server("Keep a mobile import under 50 MB.")
+            }
+
+            let filename = Self.safeMultipartFilename(upload.filename)
+            let contentType = Self.importMimeType(filename: filename)
+            body.append(Data("--\(boundary)\r\n".utf8))
+            body.append(Data("Content-Disposition: form-data; name=\"\(upload.provider.rawValue)\"; filename=\"\(filename)\"\r\n".utf8))
+            body.append(Data("Content-Type: \(contentType)\r\n\r\n".utf8))
+            body.append(upload.data)
+            body.append(Data("\r\n".utf8))
+        }
+        body.append(Data("--\(boundary)--\r\n".utf8))
+
+        return try await request(
+            path: "/api/import/batch",
+            method: "POST",
+            body: body,
+            token: token,
+            contentType: "multipart/form-data; boundary=\(boundary)"
+        )
+    }
+
     func fetchAnalysis(token: String, limit: Int = 30) async throws -> [HermesRun] {
         let boundedLimit = min(100, max(1, limit))
         return try await request(path: "/api/activities/analysis?limit=\(boundedLimit)", token: token)
@@ -189,9 +231,10 @@ final class HermesAPIClient {
         path: String,
         method: String = "GET",
         body: Data? = nil,
-        token: String? = nil
+        token: String? = nil,
+        contentType: String? = nil
     ) async throws -> T {
-        let data = try await requestData(path: path, method: method, body: body, token: token)
+        let data = try await requestData(path: path, method: method, body: body, token: token, contentType: contentType)
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
@@ -203,7 +246,8 @@ final class HermesAPIClient {
         path: String,
         method: String = "GET",
         body: Data? = nil,
-        token: String? = nil
+        token: String? = nil,
+        contentType: String? = nil
     ) async throws -> Data {
         guard let url = URL(string: baseURL.absoluteString + path) else {
             throw HermesAPIError.invalidBaseURL
@@ -219,7 +263,7 @@ final class HermesAPIClient {
         }
         if let body {
             request.httpBody = body
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(contentType ?? "application/json", forHTTPHeaderField: "Content-Type")
         }
 
         do {
@@ -237,6 +281,29 @@ final class HermesAPIClient {
             throw error
         } catch {
             throw HermesAPIError.transport(error.localizedDescription)
+        }
+    }
+
+    private static func safeMultipartFilename(_ rawFilename: String) -> String {
+        let basename = rawFilename
+            .replacingOccurrences(of: "\\", with: "/")
+            .split(separator: "/")
+            .last
+            .map(String.init) ?? "workout.export"
+        let sanitized = basename
+            .replacingOccurrences(of: "\"", with: "_")
+            .replacingOccurrences(of: "\r", with: "_")
+            .replacingOccurrences(of: "\n", with: "_")
+        return sanitized.isEmpty ? "workout.export" : sanitized
+    }
+
+    private static func importMimeType(filename: String) -> String {
+        switch URL(fileURLWithPath: filename).pathExtension.lowercased() {
+        case "gpx": return "application/gpx+xml"
+        case "tcx": return "application/vnd.garmin.tcx+xml"
+        case "fit": return "application/octet-stream"
+        case "zip": return "application/zip"
+        default: return "application/octet-stream"
         }
     }
 }

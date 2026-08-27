@@ -30,6 +30,7 @@ const requiredFiles = [
   'Views/MuscleTrainingView.swift',
   'Views/WellnessView.swift',
   'Views/StravaSyncView.swift',
+  'Views/ImportDataView.swift',
   'Views/AnalysisView.swift',
   'Views/RacesView.swift',
   'Views/RaceEditorView.swift',
@@ -79,6 +80,7 @@ assert.match(client, /\/api\/auth\/password-reset\/request/);
 assert.match(client, /\/api\/today\/dashboard/);
 assert.match(client, /\/api\/profile\/me\/name/);
 assert.match(client, /\/api\/profile\/preferences/);
+assert.match(client, /\/api\/import\/batch/);
 assert.match(client, /\/api\/coach\/schedule/);
 assert.match(client, /\/api\/activities\/analysis/);
 assert.match(client, /\/api\/activities\/.*analytics/);
@@ -115,7 +117,10 @@ assert.match(muscle, /updateMuscleCheckIn/);
 const wellness = readFileSync(join(projectRoot, 'Views/WellnessView.swift'), 'utf8');
 assert.match(wellness, /logSoreness/);
 const strava = readFileSync(join(projectRoot, 'Views/StravaSyncView.swift'), 'utf8');
+const imports = readFileSync(join(projectRoot, 'Views/ImportDataView.swift'), 'utf8');
 assert.match(strava, /startStravaSync/);
+assert.match(imports, /importActivityFiles/);
+assert.match(more, /ImportDataView/);
 assert.match(settings, /saveProfileSettings/);
 assert.match(settings, /weeklyDigestEnabled/);
 assert.match(project, /HermesRunsTests\.swift/);
