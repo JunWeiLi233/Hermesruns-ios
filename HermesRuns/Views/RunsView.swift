@@ -23,7 +23,11 @@ struct RunsView: View {
                     .listRowBackground(HermesTheme.paperRaised)
                 } else {
                     ForEach(Array(runs.enumerated()), id: \.offset) { _, run in
-                        RunListRow(run: run)
+                        NavigationLink {
+                            RunDetailView(run: run)
+                        } label: {
+                            RunListRow(run: run)
+                        }
                             .listRowBackground(HermesTheme.paperRaised)
                     }
                 }

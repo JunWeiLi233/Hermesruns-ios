@@ -16,6 +16,7 @@ The app uses the existing Spring Boot API. Runner session tokens are stored in t
 - Sign in and secure session restore
 - Today Run readiness, workout blueprint, coach message, recommended shoe, and recent runs
 - Read-only run history
+- Read-only run detail summaries from the run history list
 - Read-only shoe rotation and mileage
 - More tab with read-only Analysis (using `/api/activities/analysis` when available), Schedule, Races, Weather, Rewards, and Profile views
 - API connection settings and sign out

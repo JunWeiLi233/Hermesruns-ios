@@ -19,9 +19,11 @@ const requiredFiles = [
   'Views/RootView.swift',
   'Views/LoginView.swift',
   'Views/ForgotPasswordView.swift',
+  'Views/RunDetailView.swift',
   'Views/MainTabView.swift',
   'Views/TodayView.swift',
   'Views/RunsView.swift',
+  'Views/RunDetailView.swift',
   'Views/ShoesView.swift',
   'Views/MoreView.swift',
   'Views/AnalysisView.swift',
@@ -72,6 +74,8 @@ assert.match(tabs, /TodayView/);
 assert.match(tabs, /RunsView/);
 assert.match(tabs, /ShoesView/);
 assert.match(tabs, /MoreView/);
+const runs = readFileSync(join(projectRoot, 'Views/RunsView.swift'), 'utf8');
+assert.match(runs, /RunDetailView/);
 assert.match(project, /HermesRunsTests\.swift/);
 
 console.log('[PASS] HermesRuns iOS scaffold contract passed.');
