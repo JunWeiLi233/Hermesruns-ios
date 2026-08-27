@@ -21,6 +21,9 @@ struct MoreView: View {
                 MoreLink(title: "Wellness", subtitle: "Soreness and training-load signals", icon: "heart.text.square") {
                     WellnessView(session: session)
                 }
+                MoreLink(title: "Strava", subtitle: "Connect and sync recent runs", icon: "arrow.triangle.2.circlepath") {
+                    StravaSyncView(session: session)
+                }
                 MoreLink(title: "Weather", subtitle: "Acclimatization and pace context", icon: "cloud.sun.fill") {
                     WeatherView(session: session)
                 }

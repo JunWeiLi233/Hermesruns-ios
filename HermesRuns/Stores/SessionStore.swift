@@ -22,6 +22,9 @@ final class SessionStore: ObservableObject {
     @Published private(set) var injuryRisk: HermesInjuryRiskAssessment?
     @Published private(set) var injuryRiskLoading = false
     @Published private(set) var injuryRiskErrorMessage: String?
+    @Published private(set) var stravaStatus: HermesStravaStatus?
+    @Published private(set) var stravaLoading = false
+    @Published private(set) var stravaErrorMessage: String?
     @Published private(set) var email: String?
     @Published private(set) var errorMessage: String?
     @Published var apiBaseURL: String
@@ -168,6 +171,46 @@ final class SessionStore: ObservableObject {
         await refreshInjuryRisk()
     }
 
+    func refreshStravaStatus() async {
+        guard let token else {
+            stravaErrorMessage = HermesAPIError.unauthorized.localizedDescription
+            return
+        }
+        stravaLoading = true
+        stravaErrorMessage = nil
+        do {
+            stravaStatus = try await apiClient.fetchStravaStatus(token: token)
+        } catch HermesAPIError.unauthorized {
+            clearSession()
+            phase = .signedOut
+            stravaErrorMessage = HermesAPIError.unauthorized.localizedDescription
+        } catch {
+            stravaErrorMessage = error.localizedDescription
+        }
+        stravaLoading = false
+    }
+
+    func requestStravaLinkURL() async throws -> URL {
+        guard let token else { throw HermesAPIError.unauthorized }
+        return try await apiClient.requestStravaLinkURL(token: token)
+    }
+
+    func startStravaSync() async throws -> String {
+        guard let token else { throw HermesAPIError.unauthorized }
+        let message = try await apiClient.startStravaSync(token: token)
+        await refreshStravaStatus()
+        return message
+    }
+
+    func refreshStravaSyncStatus() async throws -> HermesStravaSyncStatus {
+        guard let token else { throw HermesAPIError.unauthorized }
+        let status = try await apiClient.fetchStravaSyncStatus(token: token)
+        if let current = stravaStatus {
+            stravaStatus = HermesStravaStatus(linked: current.linked, configured: current.configured, mode: current.mode, syncStatus: status)
+        }
+        return status
+    }
+
     func refreshDashboard() async {
         guard let token else {
             phase = .signedOut
@@ -232,5 +275,8 @@ final class SessionStore: ObservableObject {
         injuryRisk = nil
         injuryRiskLoading = false
         injuryRiskErrorMessage = nil
+        stravaStatus = nil
+        stravaLoading = false
+        stravaErrorMessage = nil
     }
 }

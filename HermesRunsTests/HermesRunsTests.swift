@@ -45,4 +45,13 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(assessment.combinedRiskScore, 33)
         XCTAssertEqual(assessment.recentLogs?.first?.level, "MEDIUM")
     }
+
+    func testStravaStatusDecodesConnectionAndSyncState() throws {
+        let data = #"{"configured":true,"linked":true,"mode":"configured","syncStatus":{"status":"RUNNING","importedRuns":2,"processedActivities":4,"active":true}}"#.data(using: .utf8)!
+        let status = try JSONDecoder().decode(HermesStravaStatus.self, from: data)
+
+        XCTAssertEqual(status.linked, true)
+        XCTAssertEqual(status.syncStatus?.status, "RUNNING")
+        XCTAssertEqual(status.syncStatus?.importedRuns, 2)
+    }
 }

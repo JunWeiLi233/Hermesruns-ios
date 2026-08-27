@@ -384,6 +384,31 @@ struct HermesSorenessDraft: Encodable {
     let notes: String?
 }
 
+struct HermesStravaStatus: Decodable {
+    let linked: Bool?
+    let configured: Bool?
+    let mode: String?
+    let syncStatus: HermesStravaSyncStatus?
+}
+
+struct HermesStravaSyncStatus: Decodable {
+    let status: String?
+    let importedRuns: Int?
+    let skippedNonRuns: Int?
+    let skippedDuplicates: Int?
+    let processedActivities: Int?
+    let processedPages: Int?
+    let error: String?
+    let active: Bool?
+    let trigger: String?
+    let recentOnly: Bool?
+    let updatedAt: String?
+}
+
+struct HermesStravaLinkResponse: Decodable {
+    let url: String?
+}
+
 struct HermesWeatherContext: Decodable {
     let available: Bool?
     let latitude: Double?

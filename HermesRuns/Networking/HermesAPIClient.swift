@@ -133,6 +133,28 @@ final class HermesAPIClient {
         _ = try await requestData(path: "/api/injury-risk/soreness", method: "POST", body: body, token: token)
     }
 
+    func fetchStravaStatus(token: String) async throws -> HermesStravaStatus {
+        try await request(path: "/api/auth/strava/status", token: token)
+    }
+
+    func requestStravaLinkURL(token: String) async throws -> URL {
+        let response: HermesStravaLinkResponse = try await request(path: "/api/auth/strava/link-url", method: "POST", token: token)
+        let host = response.url.flatMap { URL(string: $0)?.host?.lowercased() }
+        guard let rawURL = response.url, let url = URL(string: rawURL), url.scheme?.lowercased() == "https", (host == "strava.com" || host?.hasSuffix(".strava.com") == true) else {
+            throw HermesAPIError.server("Hermes returned an invalid Strava connection URL.")
+        }
+        return url
+    }
+
+    func startStravaSync(token: String) async throws -> String {
+        let data = try await requestData(path: "/api/strava/sync", token: token)
+        return String(data: data, encoding: .utf8) ?? "Strava sync started."
+    }
+
+    func fetchStravaSyncStatus(token: String) async throws -> HermesStravaSyncStatus {
+        try await request(path: "/api/auth/strava/sync-status", token: token)
+    }
+
     func logout(token: String) async {
         _ = try? await requestData(path: "/api/auth/logout", method: "POST", token: token)
     }

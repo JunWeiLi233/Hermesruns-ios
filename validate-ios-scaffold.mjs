@@ -29,6 +29,7 @@ const requiredFiles = [
   'Views/MoreView.swift',
   'Views/MuscleTrainingView.swift',
   'Views/WellnessView.swift',
+  'Views/StravaSyncView.swift',
   'Views/AnalysisView.swift',
   'Views/RacesView.swift',
   'Views/RaceEditorView.swift',
@@ -82,6 +83,10 @@ assert.match(client, /\/api\/training\/muscle\/plan/);
 assert.match(client, /\/api\/training\/muscle\/today/);
 assert.match(client, /\/api\/injury-risk\/status/);
 assert.match(client, /\/api\/injury-risk\/soreness/);
+assert.match(client, /\/api\/auth\/strava\/status/);
+assert.match(client, /\/api\/auth\/strava\/link-url/);
+assert.match(client, /\/api\/strava\/sync/);
+assert.match(client, /\/api\/auth\/strava\/sync-status/);
 assert.match(tabs, /TodayView/);
 assert.match(tabs, /RunsView/);
 assert.match(tabs, /ShoesView/);
@@ -98,6 +103,8 @@ const muscle = readFileSync(join(projectRoot, 'Views/MuscleTrainingView.swift'),
 assert.match(muscle, /updateMuscleCheckIn/);
 const wellness = readFileSync(join(projectRoot, 'Views/WellnessView.swift'), 'utf8');
 assert.match(wellness, /logSoreness/);
+const strava = readFileSync(join(projectRoot, 'Views/StravaSyncView.swift'), 'utf8');
+assert.match(strava, /startStravaSync/);
 assert.match(project, /HermesRunsTests\.swift/);
 
 console.log('[PASS] HermesRuns iOS scaffold contract passed.');

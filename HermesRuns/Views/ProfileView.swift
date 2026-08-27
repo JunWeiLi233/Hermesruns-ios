@@ -39,23 +39,25 @@ struct ProfileView: View {
                     }
 
                     HermesSectionLabel(text: "Connected services")
-                    HermesCard {
-                        HStack {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .foregroundStyle(snapshot.profile?.stravaLinked == true ? HermesTheme.mintInk : HermesTheme.mutedInk)
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("Strava")
-                                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                                Text(snapshot.profile?.stravaLinked == true ? "Connected" : "Not connected")
-                                    .font(HermesTheme.caption)
-                                    .foregroundStyle(HermesTheme.mutedInk)
+                    NavigationLink(destination: StravaSyncView(session: session)) {
+                        HermesCard {
+                            HStack {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .foregroundStyle(snapshot.profile?.stravaLinked == true ? HermesTheme.mintInk : HermesTheme.mutedInk)
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text("Strava")
+                                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                                    Text(snapshot.profile?.stravaLinked == true ? "Connected" : "Not connected")
+                                        .font(HermesTheme.caption)
+                                        .foregroundStyle(HermesTheme.mutedInk)
+                                }
+                                Spacer()
+                                Image(systemName: snapshot.profile?.stravaLinked == true ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(snapshot.profile?.stravaLinked == true ? HermesTheme.mintInk : HermesTheme.mutedInk)
                             }
-                            Spacer()
-                            Image(systemName: snapshot.profile?.stravaLinked == true ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(snapshot.profile?.stravaLinked == true ? HermesTheme.mintInk : HermesTheme.mutedInk)
                         }
                     }
-                    Text("Profile editing, OAuth linking, and file imports remain on the Hermes web app until their native flows are added.")
+                    Text("Use the Strava card to connect or sync runs. Profile editing and file imports remain on the Hermes web app while their native flows are added.")
                         .font(HermesTheme.caption)
                         .foregroundStyle(HermesTheme.mutedInk)
                         .fixedSize(horizontal: false, vertical: true)
