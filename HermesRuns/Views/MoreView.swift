@@ -15,6 +15,9 @@ struct MoreView: View {
                 MoreLink(title: "Races", subtitle: "Targets, countdowns, and course context", icon: "flag.checkered") {
                     RacesView(session: session)
                 }
+                MoreLink(title: "Strength", subtitle: "Training plan and today's check-in", icon: "figure.strengthtraining.traditional") {
+                    MuscleTrainingView(session: session)
+                }
                 MoreLink(title: "Weather", subtitle: "Acclimatization and pace context", icon: "cloud.sun.fill") {
                     WeatherView(session: session)
                 }
@@ -39,7 +42,7 @@ struct MoreView: View {
             }
 
             Section {
-                Text("Admin operations, imports, OAuth linking, maps, and shoe editing remain available in the Hermes web app while their native flows are added.")
+                Text("Admin operations, imports, OAuth linking, maps, and GPS heatmaps remain available in the Hermes web app while their native flows are added.")
                     .font(HermesTheme.caption)
                     .foregroundStyle(HermesTheme.mutedInk)
                     .padding(.vertical, 8)

@@ -15,6 +15,10 @@ final class SessionStore: ObservableObject {
     @Published private(set) var dashboard: HermesTodayDashboard?
     @Published private(set) var analysisRuns: [HermesRun] = []
     @Published private(set) var schedule: [HermesScheduledWorkout] = []
+    @Published private(set) var muscleProfile: HermesMuscleProfile?
+    @Published private(set) var musclePlan: HermesMusclePlan?
+    @Published private(set) var muscleLoading = false
+    @Published private(set) var muscleErrorMessage: String?
     @Published private(set) var email: String?
     @Published private(set) var errorMessage: String?
     @Published var apiBaseURL: String
@@ -98,6 +102,44 @@ final class SessionStore: ObservableObject {
         await refreshDashboard()
     }
 
+    func refreshMuscleTraining() async {
+        guard let token else {
+            muscleErrorMessage = HermesAPIError.unauthorized.localizedDescription
+            return
+        }
+        muscleLoading = true
+        muscleErrorMessage = nil
+        do {
+            muscleProfile = try await apiClient.fetchMuscleProfile(token: token)
+            musclePlan = try await apiClient.fetchMusclePlan(token: token)
+        } catch HermesAPIError.unauthorized {
+            clearSession()
+            phase = .signedOut
+            muscleErrorMessage = HermesAPIError.unauthorized.localizedDescription
+        } catch {
+            muscleErrorMessage = error.localizedDescription
+        }
+        muscleLoading = false
+    }
+
+    func updateMuscleProfile(_ draft: HermesMuscleProfileDraft) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        muscleProfile = try await apiClient.updateMuscleProfile(token: token, draft: draft)
+        await refreshMuscleTraining()
+    }
+
+    func updateMuscleCheckIn(_ draft: HermesMuscleCheckInDraft) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        _ = try await apiClient.updateMuscleCheckIn(token: token, draft: draft)
+        await refreshMuscleTraining()
+    }
+
+    func clearMuscleCheckIn() async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        try await apiClient.clearMuscleCheckIn(token: token)
+        await refreshMuscleTraining()
+    }
+
     func refreshDashboard() async {
         guard let token else {
             phase = .signedOut
@@ -155,5 +197,9 @@ final class SessionStore: ObservableObject {
         dashboard = nil
         analysisRuns = []
         schedule = []
+        muscleProfile = nil
+        musclePlan = nil
+        muscleLoading = false
+        muscleErrorMessage = nil
     }
 }

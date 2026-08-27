@@ -102,6 +102,28 @@ final class HermesAPIClient {
         _ = try await requestData(path: "/api/races/\(id)", method: "DELETE", token: token)
     }
 
+    func fetchMuscleProfile(token: String) async throws -> HermesMuscleProfile {
+        try await request(path: "/api/training/muscle/profile", token: token)
+    }
+
+    func fetchMusclePlan(token: String) async throws -> HermesMusclePlan {
+        try await request(path: "/api/training/muscle/plan", token: token)
+    }
+
+    func updateMuscleProfile(token: String, draft: HermesMuscleProfileDraft) async throws -> HermesMuscleProfile {
+        let body = try JSONEncoder().encode(draft)
+        return try await request(path: "/api/training/muscle/profile", method: "PUT", body: body, token: token)
+    }
+
+    func updateMuscleCheckIn(token: String, draft: HermesMuscleCheckInDraft) async throws -> HermesTodayCheckIn {
+        let body = try JSONEncoder().encode(draft)
+        return try await request(path: "/api/training/muscle/today", method: "PUT", body: body, token: token)
+    }
+
+    func clearMuscleCheckIn(token: String) async throws {
+        _ = try await requestData(path: "/api/training/muscle/today", method: "DELETE", token: token)
+    }
+
     func logout(token: String) async {
         _ = try? await requestData(path: "/api/auth/logout", method: "POST", token: token)
     }
