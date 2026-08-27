@@ -66,6 +66,22 @@ final class SessionStore: ObservableObject {
         try await apiClient.requestPasswordReset(email: email.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
+    func saveShoe(_ draft: HermesShoeDraft, id: Int64? = nil) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        if let id {
+            _ = try await apiClient.updateShoe(token: token, id: id, draft: draft)
+        } else {
+            _ = try await apiClient.createShoe(token: token, draft: draft)
+        }
+        await refreshDashboard()
+    }
+
+    func retireShoe(id: Int64) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        try await apiClient.retireShoe(token: token, id: id)
+        await refreshDashboard()
+    }
+
     func refreshDashboard() async {
         guard let token else {
             phase = .signedOut

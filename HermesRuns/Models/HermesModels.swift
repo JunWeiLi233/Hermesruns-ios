@@ -200,6 +200,15 @@ struct HermesShoe: Decodable {
     }
 }
 
+struct HermesShoeDraft: Encodable {
+    let brand: String
+    let model: String
+    let nickname: String?
+    let maxDistanceKm: Double?
+    let initialDistanceKm: Double?
+    let isPrimary: Bool
+}
+
 struct HermesRace: Decodable {
     let id: Int64?
     let name: String?

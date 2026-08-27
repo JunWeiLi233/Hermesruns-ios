@@ -25,6 +25,7 @@ const requiredFiles = [
   'Views/RunsView.swift',
   'Views/RunDetailView.swift',
   'Views/ShoesView.swift',
+  'Views/ShoeEditorView.swift',
   'Views/MoreView.swift',
   'Views/AnalysisView.swift',
   'Views/RacesView.swift',
@@ -70,12 +71,16 @@ assert.match(client, /\/api\/auth\/password-reset\/request/);
 assert.match(client, /\/api\/today\/dashboard/);
 assert.match(client, /\/api\/coach\/schedule/);
 assert.match(client, /\/api\/activities\/analysis/);
+assert.match(client, /\/api\/shoes/);
+assert.match(client, /\/retire/);
 assert.match(tabs, /TodayView/);
 assert.match(tabs, /RunsView/);
 assert.match(tabs, /ShoesView/);
 assert.match(tabs, /MoreView/);
 const runs = readFileSync(join(projectRoot, 'Views/RunsView.swift'), 'utf8');
 assert.match(runs, /RunDetailView/);
+const shoes = readFileSync(join(projectRoot, 'Views/ShoesView.swift'), 'utf8');
+assert.match(shoes, /ShoeEditorView/);
 assert.match(project, /HermesRunsTests\.swift/);
 
 console.log('[PASS] HermesRuns iOS scaffold contract passed.');

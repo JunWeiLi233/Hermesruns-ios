@@ -2,6 +2,9 @@ import SwiftUI
 
 struct ShoesView: View {
     @ObservedObject var session: SessionStore
+    @State private var editorMode: ShoeEditorMode?
+    @State private var shoeToRetire: HermesShoe?
+    @State private var actionError = ""
 
     private var snapshot: HermesDashboardSnapshot? {
         guard let dashboard = session.dashboard else { return nil }
@@ -23,13 +26,17 @@ struct ShoesView: View {
                     }
                     if snapshot.activeShoes.isEmpty {
                         HermesCard {
-                            Text("No active shoes are on your roster yet. Add them from the Hermes web app.")
+                            Text("No active shoes are on your roster yet. Use the plus button to add your first pair.")
                                 .font(HermesTheme.body)
                                 .foregroundStyle(HermesTheme.mutedInk)
                         }
                     } else {
                         ForEach(Array(snapshot.activeShoes.enumerated()), id: \.offset) { _, shoe in
-                            ShoeRotationCard(shoe: shoe)
+                            ShoeRotationCard(
+                                shoe: shoe,
+                                onEdit: { editorMode = .edit(shoe) },
+                                onRetire: { shoeToRetire = shoe }
+                            )
                         }
                     }
                 } else if session.phase == .loading {
@@ -52,6 +59,51 @@ struct ShoesView: View {
         .background(HermesTheme.paper.ignoresSafeArea())
         .navigationTitle("Shoes")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    editorMode = .create
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("Add shoe")
+                .disabled(!session.isAuthenticated)
+            }
+        }
+        .sheet(item: $editorMode) { mode in
+            ShoeEditorView(session: session, shoe: mode.shoe)
+        }
+        .alert("Retire shoe?", isPresented: Binding(
+            get: { shoeToRetire != nil },
+            set: { if !$0 { shoeToRetire = nil } }
+        )) {
+            Button("Retire", role: .destructive) {
+                guard let id = shoeToRetire?.id else {
+                    shoeToRetire = nil
+                    actionError = "This shoe has no server identifier."
+                    return
+                }
+                shoeToRetire = nil
+                Task {
+                    do {
+                        try await session.retireShoe(id: id)
+                    } catch {
+                        actionError = error.localizedDescription
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) { shoeToRetire = nil }
+        } message: {
+            Text("The shoe will leave your active rotation while keeping existing activity links intact.")
+        }
+        .alert("Shoe action failed", isPresented: Binding(
+            get: { !actionError.isEmpty },
+            set: { if !$0 { actionError = "" } }
+        )) {
+            Button("OK", role: .cancel) { actionError = "" }
+        } message: {
+            Text(actionError)
+        }
         .refreshable { await session.refreshDashboard() }
         .task {
             if session.dashboard == nil { await session.refreshDashboard() }
@@ -85,6 +137,8 @@ private struct RecommendedShoeView: View {
 
 private struct ShoeRotationCard: View {
     let shoe: HermesShoe
+    let onEdit: () -> Void
+    let onRetire: () -> Void
 
     var body: some View {
         HermesCard {
@@ -111,6 +165,15 @@ private struct ShoeRotationCard: View {
                             .padding(.vertical, 6)
                             .background(HermesTheme.mint, in: Capsule())
                     }
+                    Menu {
+                        Button("Edit", action: onEdit)
+                        Button("Retire", role: .destructive, action: onRetire)
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .font(.system(size: 21, weight: .semibold))
+                            .foregroundStyle(HermesTheme.mutedInk)
+                            .accessibilityLabel("Manage \(shoe.displayName)")
+                    }
                 }
                 HStack(spacing: 0) {
                     HermesMetric(value: HermesFormatters.distance(shoe.currentDistanceKm), label: "logged")
@@ -121,6 +184,25 @@ private struct ShoeRotationCard: View {
                     .tint(shoe.healthPercent >= 0.85 ? HermesTheme.coral : HermesTheme.mintInk)
                     .accessibilityLabel("Mileage used \(Int(shoe.healthPercent * 100)) percent")
             }
+        }
+    }
+}
+
+private enum ShoeEditorMode: Identifiable {
+    case create
+    case edit(HermesShoe)
+
+    var id: String {
+        switch self {
+        case .create: return "create"
+        case .edit(let shoe): return "edit-\(shoe.id ?? -1)"
+        }
+    }
+
+    var shoe: HermesShoe? {
+        switch self {
+        case .create: return nil
+        case .edit(let shoe): return shoe
         }
     }
 }
