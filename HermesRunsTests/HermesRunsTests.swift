@@ -36,4 +36,13 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(plan.sessions?.first?.blocks?.first?.exercises?.first?.name, "Dead bug")
         XCTAssertEqual(plan.todayCheckIn?.entryState, "ACTUAL")
     }
+
+    func testInjuryRiskDecodesRiskAndRecentSoreness() throws {
+        let data = #"{"acwr":1.24,"sorenessLevel":"MEDIUM","risk":"MODERATE","coachVoice":"Shift toward recovery today.","combinedRiskScore":33,"recommendation":"caution","acwrTrend":"flat","recentLogs":[{"level":"MEDIUM","date":"2026-08-27"}]}"#.data(using: .utf8)!
+        let assessment = try JSONDecoder().decode(HermesInjuryRiskAssessment.self, from: data)
+
+        XCTAssertEqual(assessment.risk, "MODERATE")
+        XCTAssertEqual(assessment.combinedRiskScore, 33)
+        XCTAssertEqual(assessment.recentLogs?.first?.level, "MEDIUM")
+    }
 }

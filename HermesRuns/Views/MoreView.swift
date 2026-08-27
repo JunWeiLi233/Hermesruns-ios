@@ -18,6 +18,9 @@ struct MoreView: View {
                 MoreLink(title: "Strength", subtitle: "Training plan and today's check-in", icon: "figure.strengthtraining.traditional") {
                     MuscleTrainingView(session: session)
                 }
+                MoreLink(title: "Wellness", subtitle: "Soreness and training-load signals", icon: "heart.text.square") {
+                    WellnessView(session: session)
+                }
                 MoreLink(title: "Weather", subtitle: "Acclimatization and pace context", icon: "cloud.sun.fill") {
                     WeatherView(session: session)
                 }

@@ -19,6 +19,9 @@ final class SessionStore: ObservableObject {
     @Published private(set) var musclePlan: HermesMusclePlan?
     @Published private(set) var muscleLoading = false
     @Published private(set) var muscleErrorMessage: String?
+    @Published private(set) var injuryRisk: HermesInjuryRiskAssessment?
+    @Published private(set) var injuryRiskLoading = false
+    @Published private(set) var injuryRiskErrorMessage: String?
     @Published private(set) var email: String?
     @Published private(set) var errorMessage: String?
     @Published var apiBaseURL: String
@@ -140,6 +143,31 @@ final class SessionStore: ObservableObject {
         await refreshMuscleTraining()
     }
 
+    func refreshInjuryRisk() async {
+        guard let token else {
+            injuryRiskErrorMessage = HermesAPIError.unauthorized.localizedDescription
+            return
+        }
+        injuryRiskLoading = true
+        injuryRiskErrorMessage = nil
+        do {
+            injuryRisk = try await apiClient.fetchInjuryRisk(token: token)
+        } catch HermesAPIError.unauthorized {
+            clearSession()
+            phase = .signedOut
+            injuryRiskErrorMessage = HermesAPIError.unauthorized.localizedDescription
+        } catch {
+            injuryRiskErrorMessage = error.localizedDescription
+        }
+        injuryRiskLoading = false
+    }
+
+    func logSoreness(level: String, notes: String?) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        try await apiClient.logSoreness(token: token, draft: HermesSorenessDraft(level: level, notes: notes))
+        await refreshInjuryRisk()
+    }
+
     func refreshDashboard() async {
         guard let token else {
             phase = .signedOut
@@ -201,5 +229,8 @@ final class SessionStore: ObservableObject {
         musclePlan = nil
         muscleLoading = false
         muscleErrorMessage = nil
+        injuryRisk = nil
+        injuryRiskLoading = false
+        injuryRiskErrorMessage = nil
     }
 }

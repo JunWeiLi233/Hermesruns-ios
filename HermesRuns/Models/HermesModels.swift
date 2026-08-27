@@ -362,6 +362,28 @@ struct HermesMuscleCheckInDraft: Encodable {
     let strengthDose: String?
 }
 
+struct HermesSorenessLog: Decodable {
+    let level: String?
+    let date: String?
+}
+
+struct HermesInjuryRiskAssessment: Decodable {
+    let acwr: Double?
+    let sorenessLevel: String?
+    let risk: String?
+    let coachVoice: String?
+    let combinedRiskScore: Int?
+    let recommendation: String?
+    let acwrTrend: String?
+    let recentLogs: [HermesSorenessLog]?
+    let coachAdvice: String?
+}
+
+struct HermesSorenessDraft: Encodable {
+    let level: String
+    let notes: String?
+}
+
 struct HermesWeatherContext: Decodable {
     let available: Bool?
     let latitude: Double?

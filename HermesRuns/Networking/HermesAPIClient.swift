@@ -124,6 +124,15 @@ final class HermesAPIClient {
         _ = try await requestData(path: "/api/training/muscle/today", method: "DELETE", token: token)
     }
 
+    func fetchInjuryRisk(token: String) async throws -> HermesInjuryRiskAssessment {
+        try await request(path: "/api/injury-risk/status", token: token)
+    }
+
+    func logSoreness(token: String, draft: HermesSorenessDraft) async throws {
+        let body = try JSONEncoder().encode(draft)
+        _ = try await requestData(path: "/api/injury-risk/soreness", method: "POST", body: body, token: token)
+    }
+
     func logout(token: String) async {
         _ = try? await requestData(path: "/api/auth/logout", method: "POST", token: token)
     }
