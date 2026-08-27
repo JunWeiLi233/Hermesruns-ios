@@ -1,0 +1,13 @@
+.DS_Store
+
+# Xcode user and build state
+DerivedData/
+build/
+xcuserdata/
+*.xcuserstate
+*.moved-aside
+*.xcscmblueprint
+
+# Swift package and local tooling state
+.build/
+.swiftpm/
