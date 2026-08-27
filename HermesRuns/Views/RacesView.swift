@@ -3,6 +3,9 @@ import SwiftUI
 
 struct RacesView: View {
     @ObservedObject var session: SessionStore
+    @State private var editorMode: RaceEditorMode?
+    @State private var raceToDelete: HermesRace?
+    @State private var actionError = ""
 
     private var races: [HermesRace] {
         guard let dashboard = session.dashboard else { return [] }
@@ -33,7 +36,11 @@ struct RacesView: View {
                     }
                 } else {
                     ForEach(Array(races.enumerated()), id: \.offset) { _, race in
-                        RaceCard(race: race)
+                        RaceCard(
+                            race: race,
+                            onEdit: { editorMode = .edit(race) },
+                            onDelete: { raceToDelete = race }
+                        )
                     }
                 }
             }
@@ -44,6 +51,51 @@ struct RacesView: View {
         .background(HermesTheme.paper.ignoresSafeArea())
         .navigationTitle("Races")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    editorMode = .create
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("Add race")
+                .disabled(!session.isAuthenticated)
+            }
+        }
+        .sheet(item: $editorMode) { mode in
+            RaceEditorView(session: session, race: mode.race)
+        }
+        .alert("Delete race?", isPresented: Binding(
+            get: { raceToDelete != nil },
+            set: { if !$0 { raceToDelete = nil } }
+        )) {
+            Button("Delete", role: .destructive) {
+                guard let id = raceToDelete?.id else {
+                    raceToDelete = nil
+                    actionError = "This race has no server identifier."
+                    return
+                }
+                raceToDelete = nil
+                Task {
+                    do {
+                        try await session.deleteRace(id: id)
+                    } catch {
+                        actionError = error.localizedDescription
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) { raceToDelete = nil }
+        } message: {
+            Text("This removes the saved target race and asks Hermes to replan the future schedule.")
+        }
+        .alert("Race action failed", isPresented: Binding(
+            get: { !actionError.isEmpty },
+            set: { if !$0 { actionError = "" } }
+        )) {
+            Button("OK", role: .cancel) { actionError = "" }
+        } message: {
+            Text(actionError)
+        }
         .refreshable { await session.refreshDashboard() }
         .task { if session.dashboard == nil { await session.refreshDashboard() } }
     }
@@ -51,6 +103,8 @@ struct RacesView: View {
 
 private struct RaceCard: View {
     let race: HermesRace
+    let onEdit: () -> Void
+    let onDelete: () -> Void
 
     var body: some View {
         HermesCard {
@@ -70,6 +124,15 @@ private struct RaceCard: View {
                     Text(countdown)
                         .font(.system(size: 17, weight: .black, design: .rounded))
                         .foregroundStyle(HermesTheme.coral)
+                    Menu {
+                        Button("Edit", action: onEdit)
+                        Button("Delete", role: .destructive, action: onDelete)
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .font(.system(size: 21, weight: .semibold))
+                            .foregroundStyle(HermesTheme.mutedInk)
+                            .accessibilityLabel("Manage race")
+                    }
                 }
                 HStack(spacing: 0) {
                     HermesMetric(value: HermesFormatters.date(HermesDate.parse(race.eventDate)), label: "race date")
@@ -85,6 +148,25 @@ private struct RaceCard: View {
         let days = Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 0
         if days < 0 { return "Past" }
         return "D-\(days)"
+    }
+}
+
+private enum RaceEditorMode: Identifiable {
+    case create
+    case edit(HermesRace)
+
+    var id: String {
+        switch self {
+        case .create: return "create"
+        case .edit(let race): return "edit-\(race.id ?? -1)"
+        }
+    }
+
+    var race: HermesRace? {
+        switch self {
+        case .create: return nil
+        case .edit(let race): return race
+        }
     }
 }
 

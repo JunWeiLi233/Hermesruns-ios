@@ -30,6 +30,7 @@
 		A10000000000000000000016 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* ForgotPasswordView.swift */; };
 		A10000000000000000000017 /* RunDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* RunDetailView.swift */; };
 		A10000000000000000000018 /* ShoeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* ShoeEditorView.swift */; };
+		A10000000000000000000019 /* RaceEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* RaceEditorView.swift */; };
 		A1000000000000000000000E /* HermesRunsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* HermesRunsTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 		B10000000000000000000017 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		B10000000000000000000018 /* RunDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunDetailView.swift; sourceTree = "<group>"; };
 		B10000000000000000000019 /* ShoeEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoeEditorView.swift; sourceTree = "<group>"; };
+		B10000000000000000000020 /* RaceEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceEditorView.swift; sourceTree = "<group>"; };
 		E10000000000000000000001 /* HermesRuns.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HermesRuns.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E10000000000000000000002 /* HermesRunsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HermesRunsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -110,7 +112,7 @@
 		G10000000000000000000007 /* Storage */ = {isa = PBXGroup; children = (B10000000000000000000004 /* KeychainStore.swift */); path = Storage; sourceTree = "<group>"; };
 		G10000000000000000000008 /* Stores */ = {isa = PBXGroup; children = (B10000000000000000000005 /* SessionStore.swift */); path = Stores; sourceTree = "<group>"; };
 		G10000000000000000000009 /* Theme */ = {isa = PBXGroup; children = (B10000000000000000000006 /* HermesTheme.swift */); path = Theme; sourceTree = "<group>"; };
-		G1000000000000000000000A /* Views */ = {isa = PBXGroup; children = (B10000000000000000000007 /* RootView.swift */, B10000000000000000000008 /* LoginView.swift */, B10000000000000000000009 /* MainTabView.swift */, B1000000000000000000000A /* TodayView.swift */, B1000000000000000000000B /* RunsView.swift */, B1000000000000000000000C /* ShoesView.swift */, B1000000000000000000000D /* SettingsView.swift */, B10000000000000000000010 /* MoreView.swift */, B10000000000000000000011 /* AnalysisView.swift */, B10000000000000000000012 /* RacesView.swift */, B10000000000000000000013 /* ScheduleView.swift */, B10000000000000000000014 /* RewardsView.swift */, B10000000000000000000015 /* ProfileView.swift */, B10000000000000000000016 /* WeatherView.swift */, B10000000000000000000017 /* ForgotPasswordView.swift */, B10000000000000000000018 /* RunDetailView.swift */, B10000000000000000000019 /* ShoeEditorView.swift */); path = Views; sourceTree = "<group>"; };
+		G1000000000000000000000A /* Views */ = {isa = PBXGroup; children = (B10000000000000000000007 /* RootView.swift */, B10000000000000000000008 /* LoginView.swift */, B10000000000000000000009 /* MainTabView.swift */, B1000000000000000000000A /* TodayView.swift */, B1000000000000000000000B /* RunsView.swift */, B1000000000000000000000C /* ShoesView.swift */, B1000000000000000000000D /* SettingsView.swift */, B10000000000000000000010 /* MoreView.swift */, B10000000000000000000011 /* AnalysisView.swift */, B10000000000000000000012 /* RacesView.swift */, B10000000000000000000013 /* ScheduleView.swift */, B10000000000000000000014 /* RewardsView.swift */, B10000000000000000000015 /* ProfileView.swift */, B10000000000000000000016 /* WeatherView.swift */, B10000000000000000000017 /* ForgotPasswordView.swift */, B10000000000000000000018 /* RunDetailView.swift */, B10000000000000000000019 /* ShoeEditorView.swift */, B10000000000000000000020 /* RaceEditorView.swift */); path = Views; sourceTree = "<group>"; };
 		G1000000000000000000000B /* Resources */ = {isa = PBXGroup; children = (B1000000000000000000000E /* Info.plist */); path = Resources; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
@@ -162,7 +164,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F10000000000000000000003 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000005, A10000000000000000000006, A10000000000000000000007, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000F, A10000000000000000000010, A10000000000000000000011, A10000000000000000000012, A10000000000000000000013, A10000000000000000000014, A10000000000000000000015, A10000000000000000000016, A10000000000000000000017, A10000000000000000000018); runOnlyForDeploymentPostprocessing = 0; };
+		F10000000000000000000003 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000005, A10000000000000000000006, A10000000000000000000007, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000F, A10000000000000000000010, A10000000000000000000011, A10000000000000000000012, A10000000000000000000013, A10000000000000000000014, A10000000000000000000015, A10000000000000000000016, A10000000000000000000017, A10000000000000000000018, A10000000000000000000019); runOnlyForDeploymentPostprocessing = 0; };
 		F10000000000000000000005 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A1000000000000000000000E); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 

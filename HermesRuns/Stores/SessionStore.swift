@@ -82,6 +82,22 @@ final class SessionStore: ObservableObject {
         await refreshDashboard()
     }
 
+    func saveRace(_ draft: HermesRaceDraft, id: Int64? = nil) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        if let id {
+            _ = try await apiClient.updateRace(token: token, id: id, draft: draft)
+        } else {
+            _ = try await apiClient.createRace(token: token, draft: draft)
+        }
+        await refreshDashboard()
+    }
+
+    func deleteRace(id: Int64) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        try await apiClient.deleteRace(token: token, id: id)
+        await refreshDashboard()
+    }
+
     func refreshDashboard() async {
         guard let token else {
             phase = .signedOut

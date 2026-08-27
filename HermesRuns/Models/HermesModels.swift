@@ -212,10 +212,31 @@ struct HermesShoeDraft: Encodable {
 struct HermesRace: Decodable {
     let id: Int64?
     let name: String?
+    let organization: String?
     let eventDate: String?
     let location: String?
     let distanceKm: Double?
+    let registrationStatus: String?
+    let goalTimeSeconds: Int?
+    let notes: String?
+    let nyrrNinePlusOneEligible: Bool?
+    let completedActivityId: Int64?
+    let completed: Bool?
+    let countdownDays: Int?
     let canceled: Bool?
+}
+
+struct HermesRaceDraft: Encodable {
+    let name: String
+    let organization: String?
+    let location: String?
+    let eventDate: String
+    let distanceKm: Double?
+    let registrationStatus: String
+    let goalTimeSeconds: Int?
+    let notes: String?
+    let nyrrNinePlusOneEligible: Bool
+    let completedActivityId: Int64?
 }
 
 struct HermesWeatherContext: Decodable {

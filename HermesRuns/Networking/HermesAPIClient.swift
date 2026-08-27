@@ -88,6 +88,20 @@ final class HermesAPIClient {
         _ = try await requestData(path: "/api/shoes/\(id)/retire", method: "POST", token: token)
     }
 
+    func createRace(token: String, draft: HermesRaceDraft) async throws -> HermesRace {
+        let body = try JSONEncoder().encode(draft)
+        return try await request(path: "/api/races", method: "POST", body: body, token: token)
+    }
+
+    func updateRace(token: String, id: Int64, draft: HermesRaceDraft) async throws -> HermesRace {
+        let body = try JSONEncoder().encode(draft)
+        return try await request(path: "/api/races/\(id)", method: "PUT", body: body, token: token)
+    }
+
+    func deleteRace(token: String, id: Int64) async throws {
+        _ = try await requestData(path: "/api/races/\(id)", method: "DELETE", token: token)
+    }
+
     func logout(token: String) async {
         _ = try? await requestData(path: "/api/auth/logout", method: "POST", token: token)
     }
