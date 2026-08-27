@@ -70,12 +70,15 @@ const app = readFileSync(join(projectRoot, 'HermesRunsApp.swift'), 'utf8');
 const client = readFileSync(join(projectRoot, 'Networking/HermesAPIClient.swift'), 'utf8');
 const tabs = readFileSync(join(projectRoot, 'Views/MainTabView.swift'), 'utf8');
 const login = readFileSync(join(projectRoot, 'Views/LoginView.swift'), 'utf8');
+const settings = readFileSync(join(projectRoot, 'Views/SettingsView.swift'), 'utf8');
 assert.match(app, /@main/);
 assert.match(login, /openSignup/);
 assert.match(login, /signup/);
 assert.match(client, /\/api\/auth\/login/);
 assert.match(client, /\/api\/auth\/password-reset\/request/);
 assert.match(client, /\/api\/today\/dashboard/);
+assert.match(client, /\/api\/profile\/me\/name/);
+assert.match(client, /\/api\/profile\/preferences/);
 assert.match(client, /\/api\/coach\/schedule/);
 assert.match(client, /\/api\/activities\/analysis/);
 assert.match(client, /\/api\/activities\/.*analytics/);
@@ -113,6 +116,8 @@ const wellness = readFileSync(join(projectRoot, 'Views/WellnessView.swift'), 'ut
 assert.match(wellness, /logSoreness/);
 const strava = readFileSync(join(projectRoot, 'Views/StravaSyncView.swift'), 'utf8');
 assert.match(strava, /startStravaSync/);
+assert.match(settings, /saveProfileSettings/);
+assert.match(settings, /weeklyDigestEnabled/);
 assert.match(project, /HermesRunsTests\.swift/);
 
 console.log('[PASS] HermesRuns iOS scaffold contract passed.');

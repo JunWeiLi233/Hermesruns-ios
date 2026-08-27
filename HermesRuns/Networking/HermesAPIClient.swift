@@ -64,6 +64,20 @@ final class HermesAPIClient {
         try await request(path: "/api/today/dashboard", token: token)
     }
 
+    func updateDisplayName(token: String, displayName: String) async throws -> HermesProfile {
+        let body = try JSONEncoder().encode(HermesDisplayNameDraft(displayName: displayName))
+        return try await request(path: "/api/profile/me/name", method: "PATCH", body: body, token: token)
+    }
+
+    func fetchProfilePreferences(token: String) async throws -> HermesProfilePreferences {
+        try await request(path: "/api/profile/preferences", token: token)
+    }
+
+    func updateProfilePreferences(token: String, draft: HermesProfilePreferencesDraft) async throws -> HermesProfilePreferences {
+        let body = try JSONEncoder().encode(draft)
+        return try await request(path: "/api/profile/preferences", method: "PUT", body: body, token: token)
+    }
+
     func fetchAnalysis(token: String, limit: Int = 30) async throws -> [HermesRun] {
         let boundedLimit = min(100, max(1, limit))
         return try await request(path: "/api/activities/analysis?limit=\(boundedLimit)", token: token)

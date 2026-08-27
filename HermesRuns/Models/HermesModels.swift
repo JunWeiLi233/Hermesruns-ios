@@ -14,6 +14,20 @@ struct HermesProfile: Decodable {
     let showLanguageSettingsHint: Bool?
 }
 
+struct HermesProfilePreferences: Codable {
+    let mantra: String?
+    let weeklyDigestEnabled: Bool?
+}
+
+struct HermesDisplayNameDraft: Encodable {
+    let displayName: String
+}
+
+struct HermesProfilePreferencesDraft: Encodable {
+    let mantra: String
+    let weeklyDigestEnabled: Bool
+}
+
 struct HermesTodayDashboard: Decodable {
     let profile: HermesProfile?
     let activities: [HermesRun]

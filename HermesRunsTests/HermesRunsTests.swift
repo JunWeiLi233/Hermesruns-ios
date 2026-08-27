@@ -23,6 +23,14 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertNotNil(HermesDate.parse("2026-08-27"))
     }
 
+    func testProfilePreferencesDecodeForNativeSettings() throws {
+        let data = #"{"mantra":"Stay patient.","weeklyDigestEnabled":true}"#.data(using: .utf8)!
+        let preferences = try JSONDecoder().decode(HermesProfilePreferences.self, from: data)
+
+        XCTAssertEqual(preferences.mantra, "Stay patient.")
+        XCTAssertEqual(preferences.weeklyDigestEnabled, true)
+    }
+
     func testBaseURLNormalizationAddsDevelopmentScheme() {
         XCTAssertEqual(HermesAPIClient.normalizedURL("localhost:8080")?.absoluteString, "http://localhost:8080")
     }

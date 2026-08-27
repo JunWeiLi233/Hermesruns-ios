@@ -25,6 +25,9 @@ final class SessionStore: ObservableObject {
     @Published private(set) var stravaStatus: HermesStravaStatus?
     @Published private(set) var stravaLoading = false
     @Published private(set) var stravaErrorMessage: String?
+    @Published private(set) var profilePreferences: HermesProfilePreferences?
+    @Published private(set) var profileSettingsLoading = false
+    @Published private(set) var profileSettingsErrorMessage: String?
     @Published private(set) var email: String?
     @Published private(set) var errorMessage: String?
     @Published var apiBaseURL: String
@@ -74,6 +77,44 @@ final class SessionStore: ObservableObject {
 
     func requestPasswordReset(email: String) async throws {
         try await apiClient.requestPasswordReset(email: email.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    func refreshProfileSettings() async {
+        guard let token else {
+            profileSettingsErrorMessage = HermesAPIError.unauthorized.localizedDescription
+            return
+        }
+        profileSettingsLoading = true
+        profileSettingsErrorMessage = nil
+        do {
+            profilePreferences = try await apiClient.fetchProfilePreferences(token: token)
+        } catch HermesAPIError.unauthorized {
+            clearSession()
+            phase = .signedOut
+            profileSettingsErrorMessage = HermesAPIError.unauthorized.localizedDescription
+        } catch {
+            profileSettingsErrorMessage = error.localizedDescription
+        }
+        profileSettingsLoading = false
+    }
+
+    func updateDisplayName(_ displayName: String) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        let updatedProfile = try await apiClient.updateDisplayName(token: token, displayName: displayName)
+        guard let dashboard else { return }
+        self.dashboard = HermesTodayDashboard(
+            profile: updatedProfile,
+            activities: dashboard.activities,
+            coachToday: dashboard.coachToday,
+            weather: dashboard.weather,
+            races: dashboard.races,
+            shoes: dashboard.shoes
+        )
+    }
+
+    func updateProfilePreferences(_ draft: HermesProfilePreferencesDraft) async throws {
+        guard let token else { throw HermesAPIError.unauthorized }
+        profilePreferences = try await apiClient.updateProfilePreferences(token: token, draft: draft)
     }
 
     func saveShoe(_ draft: HermesShoeDraft, id: Int64? = nil) async throws {
@@ -293,5 +334,8 @@ final class SessionStore: ObservableObject {
         stravaStatus = nil
         stravaLoading = false
         stravaErrorMessage = nil
+        profilePreferences = nil
+        profileSettingsLoading = false
+        profileSettingsErrorMessage = nil
     }
 }

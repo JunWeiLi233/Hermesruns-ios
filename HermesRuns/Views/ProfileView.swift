@@ -57,7 +57,7 @@ struct ProfileView: View {
                             }
                         }
                     }
-                    Text("Use the Strava card to connect or sync runs. Profile editing and file imports remain on the Hermes web app while their native flows are added.")
+                    Text("Use Settings to update your display name and runner preferences. File imports remain on the Hermes web app while their native flow is added.")
                         .font(HermesTheme.caption)
                         .foregroundStyle(HermesTheme.mutedInk)
                         .fixedSize(horizontal: false, vertical: true)
