@@ -37,6 +37,7 @@ struct RacesView: View {
                 } else {
                     ForEach(Array(races.enumerated()), id: \.offset) { _, race in
                         RaceCard(
+                            session: session,
                             race: race,
                             onEdit: { editorMode = .edit(race) },
                             onDelete: { raceToDelete = race }
@@ -102,6 +103,7 @@ struct RacesView: View {
 }
 
 private struct RaceCard: View {
+    @ObservedObject var session: SessionStore
     let race: HermesRace
     let onEdit: () -> Void
     let onDelete: () -> Void
@@ -138,6 +140,11 @@ private struct RaceCard: View {
                     HermesMetric(value: HermesFormatters.date(HermesDate.parse(race.eventDate)), label: "race date")
                     HermesMetric(value: HermesFormatters.distance(race.distanceKm), label: "distance")
                     HermesMetric(value: race.eventDate == nil ? "—" : "target", label: "status")
+                }
+                NavigationLink(destination: RaceDetailView(session: session, race: race)) {
+                    Label("Course and race detail", systemImage: "map")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(HermesTheme.coral)
                 }
             }
         }

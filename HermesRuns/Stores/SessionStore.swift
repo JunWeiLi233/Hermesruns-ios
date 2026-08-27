@@ -156,6 +156,11 @@ final class SessionStore: ObservableObject {
         await refreshDashboard()
     }
 
+    func fetchRaceCourseMap(race: HermesRace) async throws -> HermesRaceCourseMap {
+        guard let token else { throw HermesAPIError.unauthorized }
+        return try await apiClient.fetchRaceCourseMap(token: token, race: race)
+    }
+
     func refreshMuscleTraining() async {
         guard let token else {
             muscleErrorMessage = HermesAPIError.unauthorized.localizedDescription

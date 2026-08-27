@@ -158,6 +158,18 @@ final class HermesAPIClient {
         _ = try await requestData(path: "/api/races/\(id)", method: "DELETE", token: token)
     }
 
+    func fetchRaceCourseMap(token: String, race: HermesRace) async throws -> HermesRaceCourseMap {
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "raceId", value: race.id.map { String($0) }),
+            URLQueryItem(name: "name", value: race.name ?? "Race"),
+            URLQueryItem(name: "city", value: race.location),
+            URLQueryItem(name: "distanceKm", value: race.distanceKm.map { String($0) })
+        ]
+        let query = components.percentEncodedQuery ?? ""
+        return try await request(path: "/api/races/course-map?\(query)", token: token)
+    }
+
     func fetchMuscleProfile(token: String) async throws -> HermesMuscleProfile {
         try await request(path: "/api/training/muscle/profile", token: token)
     }

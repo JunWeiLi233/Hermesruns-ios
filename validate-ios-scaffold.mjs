@@ -34,6 +34,7 @@ const requiredFiles = [
   'Views/AnalysisView.swift',
   'Views/RacesView.swift',
   'Views/RaceEditorView.swift',
+  'Views/RaceDetailView.swift',
   'Views/ScheduleView.swift',
   'Views/RewardsView.swift',
   'Views/ProfileView.swift',
@@ -89,6 +90,7 @@ assert.match(client, /\/api\/activities\/.*points/);
 assert.match(client, /\/api\/shoes/);
 assert.match(client, /\/retire/);
 assert.match(client, /\/api\/races/);
+assert.match(client, /\/api\/races\/course-map/);
 assert.match(client, /\/api\/training\/muscle\/profile/);
 assert.match(client, /\/api\/training\/muscle\/plan/);
 assert.match(client, /\/api\/training\/muscle\/today/);
@@ -109,7 +111,10 @@ assert.match(runDetail, /postRunReview/);
 const shoes = readFileSync(join(projectRoot, 'Views/ShoesView.swift'), 'utf8');
 assert.match(shoes, /ShoeEditorView/);
 const races = readFileSync(join(projectRoot, 'Views/RacesView.swift'), 'utf8');
+const raceDetail = readFileSync(join(projectRoot, 'Views/RaceDetailView.swift'), 'utf8');
 assert.match(races, /RaceEditorView/);
+assert.match(races, /RaceDetailView/);
+assert.match(raceDetail, /fetchRaceCourseMap/);
 const more = readFileSync(join(projectRoot, 'Views/MoreView.swift'), 'utf8');
 assert.match(more, /MuscleTrainingView/);
 const muscle = readFileSync(join(projectRoot, 'Views/MuscleTrainingView.swift'), 'utf8');

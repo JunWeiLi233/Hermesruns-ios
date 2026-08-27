@@ -46,6 +46,17 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(HermesImportProvider.huawei.rawValue, "huawei")
     }
 
+    func testRaceCourseMapDecodesVerifiedRouteAndElevation() throws {
+        let data = #"{"routeAvailable":true,"confidence":91,"routePoints":[{"lat":40.7,"lng":-74.0,"label":"Start"},{"lat":40.71,"lng":-73.99,"label":"Finish"}],"elevationSamples":[4,8,6],"totalClimbMeters":12,"officialRouteVerified":true}"#.data(using: .utf8)!
+        let courseMap = try JSONDecoder().decode(HermesRaceCourseMap.self, from: data)
+
+        XCTAssertEqual(courseMap.routePoints?.count, 2)
+        XCTAssertEqual(courseMap.routePoints?.first?.lat, 40.7)
+        XCTAssertEqual(courseMap.confidence, 91)
+        XCTAssertEqual(courseMap.totalClimbMeters, 12)
+        XCTAssertEqual(courseMap.officialRouteVerified, true)
+    }
+
     func testBaseURLNormalizationAddsDevelopmentScheme() {
         XCTAssertEqual(HermesAPIClient.normalizedURL("localhost:8080")?.absoluteString, "http://localhost:8080")
     }

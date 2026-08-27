@@ -430,6 +430,37 @@ struct HermesSorenessDraft: Encodable {
     let notes: String?
 }
 
+struct HermesRaceRoutePoint: Decodable {
+    let lat: Double
+    let lng: Double
+    let label: String?
+}
+
+struct HermesRaceOverlayBounds: Decodable {
+    let north: Double
+    let south: Double
+    let east: Double
+    let west: Double
+}
+
+struct HermesRaceCourseMap: Decodable {
+    let imageUrl: String?
+    let previewImageUrl: String?
+    let overlayImageUrl: String?
+    let source: String?
+    let routeAvailable: Bool?
+    let cityLevelReference: Bool?
+    let confidence: Int?
+    let summary: String?
+    let viewportBounds: HermesRaceOverlayBounds?
+    let routePoints: [HermesRaceRoutePoint]?
+    let routePointCount: Int?
+    let elevationSamples: [Int]?
+    let totalClimbMeters: Int?
+    let aiAssisted: Bool?
+    let officialRouteVerified: Bool?
+}
+
 struct HermesStravaStatus: Decodable {
     let linked: Bool?
     let configured: Bool?
