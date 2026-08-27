@@ -63,4 +63,12 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(analytics.cardiacDrift?.driftPercent, 3.4)
         XCTAssertEqual(analytics.debrief?.readinessScore, 82)
     }
+
+    func testRoutePointsDecodeForNativeMap() throws {
+        let data = #"[{"latitude":12.345,"longitude":-45.678},{"latitude":12.346,"longitude":-45.679}]"#.data(using: .utf8)!
+        let points = try JSONDecoder().decode([HermesRoutePoint].self, from: data)
+
+        XCTAssertEqual(points.count, 2)
+        XCTAssertEqual(points.last?.latitude, 12.346)
+    }
 }

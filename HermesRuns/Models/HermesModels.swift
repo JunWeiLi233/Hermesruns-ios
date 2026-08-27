@@ -480,6 +480,11 @@ struct HermesTrainingEffect: Decodable {
     let highIntensityShare: Double?
 }
 
+struct HermesRoutePoint: Decodable {
+    let latitude: Double
+    let longitude: Double
+}
+
 struct HermesWeatherContext: Decodable {
     let available: Bool?
     let latitude: Double?

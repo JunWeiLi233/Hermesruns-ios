@@ -1,4 +1,5 @@
 import Foundation
+import MapKit
 import SwiftUI
 
 struct RunDetailView: View {
@@ -7,6 +8,8 @@ struct RunDetailView: View {
 
     @State private var analytics: HermesRunAnalytics?
     @State private var telemetry: HermesRunTelemetry?
+    @State private var routePoints: [HermesRoutePoint] = []
+    @State private var routeLoading = false
     @State private var insightsLoading = false
     @State private var insightsError = ""
 
@@ -66,6 +69,21 @@ struct RunDetailView: View {
                     }
                 }
 
+                if routeLoading {
+                    ProgressView("Loading route…")
+                        .tint(HermesTheme.coral)
+                        .font(HermesTheme.caption)
+                } else if routePoints.count >= 2 {
+                    HermesRouteMapView(points: Array(routePoints.prefix(5000)))
+                        .frame(height: 250)
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .accessibilityLabel("Run route map")
+                } else {
+                    Text("No route coordinates were captured for this run.")
+                        .font(HermesTheme.caption)
+                        .foregroundStyle(HermesTheme.mutedInk)
+                }
+
                 if insightsLoading {
                     ProgressView("Loading post-run review…")
                         .tint(HermesTheme.coral)
@@ -84,7 +102,7 @@ struct RunDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Text("Route maps, elevation recalibration, and run deletion remain available in the Hermes web detail route.")
+                Text("Elevation recalibration and run deletion remain available in the Hermes web detail route.")
                     .font(HermesTheme.caption)
                     .foregroundStyle(HermesTheme.mutedInk)
                     .fixedSize(horizontal: false, vertical: true)
@@ -97,6 +115,7 @@ struct RunDetailView: View {
         .navigationTitle("Run")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadInsights() }
+        .task { await loadRoute() }
     }
 
     @ViewBuilder
@@ -207,9 +226,62 @@ struct RunDetailView: View {
         insightsLoading = false
     }
 
+    private func loadRoute() async {
+        guard let id = run.id else { return }
+        routeLoading = true
+        defer { routeLoading = false }
+        do {
+            routePoints = try await session.fetchRunRoute(id: id)
+        } catch {
+            routePoints = []
+        }
+    }
+
     private func formatted(_ value: Double?, suffix: String) -> String {
         guard let value else { return "—" }
         return String(format: "%.0f%@", value, suffix)
+    }
+}
+
+private struct HermesRouteMapView: UIViewRepresentable {
+    let points: [HermesRoutePoint]
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIView(context: Context) -> MKMapView {
+        let mapView = MKMapView(frame: .zero)
+        mapView.delegate = context.coordinator
+        mapView.isRotateEnabled = false
+        mapView.isPitchEnabled = false
+        mapView.showsCompass = false
+        mapView.pointOfInterestFilter = .excludingAll
+        return mapView
+    }
+
+    func updateUIView(_ mapView: MKMapView, context: Context) {
+        mapView.removeOverlays(mapView.overlays)
+        let coordinates = points.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+        guard coordinates.count >= 2 else { return }
+        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+        mapView.addOverlay(polyline)
+        mapView.setVisibleMapRect(
+            polyline.boundingMapRect,
+            edgePadding: UIEdgeInsets(top: 28, left: 28, bottom: 28, right: 28),
+            animated: false
+        )
+    }
+
+    final class Coordinator: NSObject, MKMapViewDelegate {
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            guard let polyline = overlay as? MKPolyline else { return MKOverlayRenderer(overlay: overlay) }
+            let renderer = MKPolylineRenderer(polyline: polyline)
+            renderer.strokeColor = UIColor(HermesTheme.coral)
+            renderer.lineWidth = 4
+            renderer.lineJoin = .round
+            return renderer
+        }
     }
 }
 

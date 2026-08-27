@@ -16,9 +16,9 @@ The app uses the existing Spring Boot API. Runner session tokens are stored in t
 - Sign in and secure session restore
 - Today Run readiness, workout blueprint, coach message, recommended shoe, and recent runs
 - Read-only run history
-- Run detail summaries with post-run debrief, lap, telemetry, and training-effect signals
+- Run detail summaries with route maps, post-run debrief, lap, telemetry, and training-effect signals
 - Shoe rotation and mileage with add, edit, and retire actions
 - More tab with Analysis (using `/api/activities/analysis` when available), Schedule, Races with add/edit/delete actions, Wellness injury-risk and soreness check-ins, Strava connection and sync, Weather, Rewards, Profile, and runner strength planning
 - API connection settings and sign out
 
-Admin operations, OAuth linking, file imports, GPS heatmaps, and race maps/planning remain follow-up native surfaces; the web app remains the source of truth for those features.
+Admin operations, account creation with reCAPTCHA, file imports, GPS heatmaps, race maps/planning, elevation recalibration, and run deletion remain follow-up native surfaces; the web app remains the source of truth for those features.

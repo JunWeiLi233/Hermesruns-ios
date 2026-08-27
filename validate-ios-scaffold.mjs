@@ -77,6 +77,7 @@ assert.match(client, /\/api\/coach\/schedule/);
 assert.match(client, /\/api\/activities\/analysis/);
 assert.match(client, /\/api\/activities\/.*analytics/);
 assert.match(client, /\/api\/activities\/.*telemetry/);
+assert.match(client, /\/api\/activities\/.*points/);
 assert.match(client, /\/api\/shoes/);
 assert.match(client, /\/retire/);
 assert.match(client, /\/api\/races/);

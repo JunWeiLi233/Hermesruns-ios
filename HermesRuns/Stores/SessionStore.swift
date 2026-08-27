@@ -221,6 +221,11 @@ final class SessionStore: ObservableObject {
         return try await apiClient.fetchRunTelemetry(token: token, id: id)
     }
 
+    func fetchRunRoute(id: Int64) async throws -> [HermesRoutePoint] {
+        guard let token else { throw HermesAPIError.unauthorized }
+        return try await apiClient.fetchRunRoute(token: token, id: id)
+    }
+
     func refreshDashboard() async {
         guard let token else {
             phase = .signedOut

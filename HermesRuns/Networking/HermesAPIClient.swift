@@ -163,6 +163,10 @@ final class HermesAPIClient {
         try await request(path: "/api/activities/\(id)/telemetry", token: token)
     }
 
+    func fetchRunRoute(token: String, id: Int64) async throws -> [HermesRoutePoint] {
+        try await request(path: "/api/activities/\(id)/points", token: token)
+    }
+
     func logout(token: String) async {
         _ = try? await requestData(path: "/api/auth/logout", method: "POST", token: token)
     }

@@ -48,7 +48,7 @@ struct MoreView: View {
             }
 
             Section {
-                Text("Admin operations, imports, OAuth linking, maps, and GPS heatmaps remain available in the Hermes web app while their native flows are added.")
+                Text("Admin operations, imports, GPS heatmaps, and race maps remain available in the Hermes web app while their native flows are added.")
                     .font(HermesTheme.caption)
                     .foregroundStyle(HermesTheme.mutedInk)
                     .padding(.vertical, 8)
