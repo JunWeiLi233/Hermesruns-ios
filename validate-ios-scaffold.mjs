@@ -76,7 +76,9 @@ assert.match(client, /\/api\/activities\/analysis/);
 assert.match(client, /\/api\/shoes/);
 assert.match(client, /\/retire/);
 assert.match(client, /\/api\/races/);
+assert.match(client, /\/api\/training\/muscle\/profile/);
 assert.match(client, /\/api\/training\/muscle\/plan/);
+assert.match(client, /\/api\/training\/muscle\/today/);
 assert.match(tabs, /TodayView/);
 assert.match(tabs, /RunsView/);
 assert.match(tabs, /ShoesView/);
@@ -89,6 +91,8 @@ const races = readFileSync(join(projectRoot, 'Views/RacesView.swift'), 'utf8');
 assert.match(races, /RaceEditorView/);
 const more = readFileSync(join(projectRoot, 'Views/MoreView.swift'), 'utf8');
 assert.match(more, /MuscleTrainingView/);
+const muscle = readFileSync(join(projectRoot, 'Views/MuscleTrainingView.swift'), 'utf8');
+assert.match(muscle, /updateMuscleCheckIn/);
 assert.match(project, /HermesRunsTests\.swift/);
 
 console.log('[PASS] HermesRuns iOS scaffold contract passed.');
