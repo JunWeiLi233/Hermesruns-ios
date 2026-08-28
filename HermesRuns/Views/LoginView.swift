@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject var session: SessionStore
+    @Environment(\.openURL) private var openURL
     @State private var email = ""
     @State private var password = ""
     @State private var serverURL: String
@@ -72,6 +73,12 @@ struct LoginView: View {
                                 .foregroundStyle(HermesTheme.coral)
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
+                        Button("Create a Hermes account") {
+                            openSignup()
+                        }
+                        .font(HermesTheme.caption)
+                        .foregroundStyle(HermesTheme.coral)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
 
                     VStack(alignment: .leading, spacing: 10) {
@@ -108,6 +115,11 @@ struct LoginView: View {
         guard canSubmit else { return }
         guard session.updateAPIBaseURL(serverURL) else { return }
         Task { await session.login(email: email, password: password) }
+    }
+
+    private func openSignup() {
+        guard let url = URL(string: session.apiBaseURL)?.appendingPathComponent("signup") else { return }
+        _ = openURL(url)
     }
 }
 

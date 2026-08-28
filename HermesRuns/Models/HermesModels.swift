@@ -14,6 +14,52 @@ struct HermesProfile: Decodable {
     let showLanguageSettingsHint: Bool?
 }
 
+struct HermesProfilePreferences: Codable {
+    let mantra: String?
+    let weeklyDigestEnabled: Bool?
+}
+
+struct HermesDisplayNameDraft: Encodable {
+    let displayName: String
+}
+
+struct HermesProfilePreferencesDraft: Encodable {
+    let mantra: String
+    let weeklyDigestEnabled: Bool
+}
+
+enum HermesImportProvider: String, CaseIterable, Identifiable, Hashable {
+    case exports
+    case coros
+    case huawei
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .exports: return "FIT / GPX"
+        case .coros: return "COROS"
+        case .huawei: return "HUAWEI"
+        }
+    }
+}
+
+struct HermesImportUpload {
+    let provider: HermesImportProvider
+    let filename: String
+    let data: Data
+}
+
+struct HermesImportResult: Decodable {
+    let provider: String?
+    let importedActivities: Int?
+    let importedPoints: Int?
+    let skippedDuplicates: Int?
+    let skippedNonRuns: Int?
+    let message: String?
+    let rejectedFiles: [String]?
+}
+
 struct HermesTodayDashboard: Decodable {
     let profile: HermesProfile?
     let activities: [HermesRun]
@@ -200,13 +246,320 @@ struct HermesShoe: Decodable {
     }
 }
 
+struct HermesShoeDraft: Encodable {
+    let brand: String
+    let model: String
+    let nickname: String?
+    let maxDistanceKm: Double?
+    let initialDistanceKm: Double?
+    let isPrimary: Bool
+}
+
 struct HermesRace: Decodable {
     let id: Int64?
     let name: String?
+    let organization: String?
     let eventDate: String?
     let location: String?
     let distanceKm: Double?
+    let registrationStatus: String?
+    let goalTimeSeconds: Int?
+    let notes: String?
+    let nyrrNinePlusOneEligible: Bool?
+    let completedActivityId: Int64?
+    let completed: Bool?
+    let countdownDays: Int?
     let canceled: Bool?
+}
+
+struct HermesRaceDraft: Encodable {
+    let name: String
+    let organization: String?
+    let location: String?
+    let eventDate: String
+    let distanceKm: Double?
+    let registrationStatus: String
+    let goalTimeSeconds: Int?
+    let notes: String?
+    let nyrrNinePlusOneEligible: Bool
+    let completedActivityId: Int64?
+}
+
+struct HermesMuscleProfile: Decodable {
+    let experienceLevel: String?
+    let equipmentLevel: String?
+    let sessionMinutes: Int?
+    let noisePreference: String?
+    let preferredStrengthDays: [String]?
+}
+
+struct HermesMuscleProfileDraft: Encodable {
+    let experienceLevel: String
+    let equipmentLevel: String
+    let sessionMinutes: Int
+    let noisePreference: String
+    let preferredStrengthDays: [String]
+}
+
+struct HermesMusclePlan: Decodable {
+    let weekContext: HermesMuscleWeekContext?
+    let days: [HermesMuscleDay]?
+    let sessions: [HermesMuscleSession]?
+    let rationale: [String]?
+    let todayCheckIn: HermesTodayCheckIn?
+    let planSource: String?
+    let recommendedMuscleArea: String?
+    let recommendedMuscleReasonCode: String?
+}
+
+struct HermesMuscleWeekContext: Decodable {
+    let volumeKm7d: Double?
+    let volumeKm28d: Double?
+    let acwr: Double?
+    let highIntensityRatioLast7d: Double?
+    let loadStatus: String?
+    let recoveryGate: String?
+    let recommendedSessionsPerWeek: Int?
+    let currentFocus: String?
+    let conservativeMode: Bool?
+    let raceWeek: Bool?
+    let nextKeyRunDate: String?
+    let nextKeyRunType: String?
+    let nextLongRunDate: String?
+    let nextLongRunKm: Double?
+    let recentHardRunCount7d: Int?
+}
+
+struct HermesMuscleDay: Decodable {
+    let date: String?
+    let dayLabel: String?
+    let run: HermesMuscleRun?
+    let strength: HermesStrengthAssignment?
+    let noStrengthReasonCode: String?
+}
+
+struct HermesMuscleRun: Decodable {
+    let workoutType: String?
+    let plannedDistanceKm: Double?
+    let plannedDurationMinutes: Int?
+    let keyRun: Bool?
+    let longRun: Bool?
+    let readinessAdjusted: Bool?
+    let notes: String?
+    let planSource: String?
+}
+
+struct HermesStrengthAssignment: Decodable {
+    let sessionType: String?
+    let title: String?
+    let emphasis: String?
+    let durationMinutes: Int?
+    let targetRpe: Int?
+    let optional: Bool?
+    let quietCompatible: Bool?
+    let placementReasonCode: String?
+    let cautionCode: String?
+}
+
+struct HermesMuscleSession: Decodable {
+    let sessionType: String?
+    let title: String?
+    let emphasis: String?
+    let durationMinutes: Int?
+    let targetRpe: Int?
+    let optional: Bool?
+    let blocks: [HermesMuscleBlock]?
+}
+
+struct HermesMuscleBlock: Decodable {
+    let title: String?
+    let exercises: [HermesExercise]?
+}
+
+struct HermesExercise: Decodable {
+    let name: String?
+    let sets: Int?
+    let repsOrDuration: String?
+    let targetRpe: Int?
+    let tempoOrIntent: String?
+    let noiseLevel: String?
+    let equipmentNeeded: String?
+    let regression: String?
+    let progression: String?
+}
+
+struct HermesTodayCheckIn: Decodable {
+    let trainingDate: String?
+    let runType: String?
+    let entryState: String?
+    let distanceKm: Double?
+    let durationMinutes: Int?
+    let strengthFocus: String?
+    let strengthDose: String?
+    let updatedAt: String?
+}
+
+struct HermesMuscleCheckInDraft: Encodable {
+    let runType: String
+    let entryState: String
+    let distanceKm: Double?
+    let durationMinutes: Int?
+    let strengthFocus: String?
+    let strengthDose: String?
+}
+
+struct HermesSorenessLog: Decodable {
+    let level: String?
+    let date: String?
+}
+
+struct HermesInjuryRiskAssessment: Decodable {
+    let acwr: Double?
+    let sorenessLevel: String?
+    let risk: String?
+    let coachVoice: String?
+    let combinedRiskScore: Int?
+    let recommendation: String?
+    let acwrTrend: String?
+    let recentLogs: [HermesSorenessLog]?
+    let coachAdvice: String?
+}
+
+struct HermesSorenessDraft: Encodable {
+    let level: String
+    let notes: String?
+}
+
+struct HermesRaceRoutePoint: Decodable {
+    let lat: Double
+    let lng: Double
+    let label: String?
+}
+
+struct HermesRaceOverlayBounds: Decodable {
+    let north: Double
+    let south: Double
+    let east: Double
+    let west: Double
+}
+
+struct HermesRaceCourseMap: Decodable {
+    let imageUrl: String?
+    let previewImageUrl: String?
+    let overlayImageUrl: String?
+    let source: String?
+    let routeAvailable: Bool?
+    let cityLevelReference: Bool?
+    let confidence: Int?
+    let summary: String?
+    let viewportBounds: HermesRaceOverlayBounds?
+    let routePoints: [HermesRaceRoutePoint]?
+    let routePointCount: Int?
+    let elevationSamples: [Int]?
+    let totalClimbMeters: Int?
+    let aiAssisted: Bool?
+    let officialRouteVerified: Bool?
+}
+
+struct HermesStravaStatus: Decodable {
+    let linked: Bool?
+    let configured: Bool?
+    let mode: String?
+    let syncStatus: HermesStravaSyncStatus?
+}
+
+struct HermesStravaSyncStatus: Decodable {
+    let status: String?
+    let importedRuns: Int?
+    let skippedNonRuns: Int?
+    let skippedDuplicates: Int?
+    let processedActivities: Int?
+    let processedPages: Int?
+    let error: String?
+    let active: Bool?
+    let trigger: String?
+    let recentOnly: Bool?
+    let updatedAt: String?
+}
+
+struct HermesStravaLinkResponse: Decodable {
+    let url: String?
+}
+
+struct HermesRunAnalytics: Decodable {
+    let laps: [HermesRunLap]?
+    let elevationProfile: [HermesElevationSample]?
+    let averageCadence: Double?
+    let averageStrideLengthMeters: Double?
+    let cardiacDrift: HermesCardiacDrift?
+    let minElevationMeters: Double?
+    let maxElevationMeters: Double?
+    let debrief: HermesPostRunDebrief?
+}
+
+struct HermesRunLap: Decodable {
+    let lapIndex: Int?
+    let distanceKm: Double?
+    let durationSeconds: Int?
+    let pace: String?
+    let averageHeartRate: Int?
+    let averageCadence: Int?
+    let elevationGainMeters: Double?
+}
+
+struct HermesElevationSample: Decodable {
+    let distanceKm: Double?
+    let elevationMeters: Double?
+}
+
+struct HermesCardiacDrift: Decodable {
+    let driftPercent: Double?
+    let firstHalfAverageHeartRate: Double?
+    let secondHalfAverageHeartRate: Double?
+    let firstHalfPace: String?
+    let secondHalfPace: String?
+}
+
+struct HermesPostRunDebrief: Decodable {
+    let interpretation: String?
+    let readinessScore: Int?
+    let nextDayGuidance: String?
+}
+
+struct HermesRunTelemetry: Decodable {
+    let sampleCount: Int?
+    let resolution: String?
+    let series: [String: HermesTelemetrySeries]?
+    let trainingEffect: HermesTrainingEffect?
+}
+
+struct HermesTelemetrySeries: Decodable {
+    let key: String?
+    let unit: String?
+    let available: Bool?
+    let samples: [HermesTelemetrySample]?
+}
+
+struct HermesTelemetrySample: Decodable {
+    let t: Int?
+    let value: Double?
+    let distanceKm: Double?
+}
+
+struct HermesTrainingEffect: Decodable {
+    let available: Bool?
+    let source: String?
+    let basis: String?
+    let aerobic: Double?
+    let anaerobic: Double?
+    let averageHeartRate: Double?
+    let maxHeartRateBasis: Double?
+    let highIntensityShare: Double?
+}
+
+struct HermesRoutePoint: Decodable {
+    let latitude: Double
+    let longitude: Double
 }
 
 struct HermesWeatherContext: Decodable {
@@ -376,6 +729,6 @@ enum HermesPreviewFixtures {
           ]
         }
         """
-        return try! JSONDecoder().decode(HermesTodayDashboard.self, from: Data(json.utf8))
+        return (try? JSONDecoder().decode(HermesTodayDashboard.self, from: Data(json.utf8))) ?? HermesTodayDashboard()
     }()
 }
