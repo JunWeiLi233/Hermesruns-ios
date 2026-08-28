@@ -73,7 +73,7 @@ struct SettingsView: View {
                 HermesSectionLabel(text: "Connection")
                     .textCase(nil)
             } footer: {
-                Text("Use an HTTPS deployment on a physical device. Local HTTP is enabled only for development on trusted networks.")
+                Text("Use an HTTPS deployment on a physical device. Local HTTP is enabled only for localhost development.")
             }
 
             Section {

@@ -39,7 +39,17 @@ final class HermesAPIClient {
             raw = "http://" + raw
         }
         while raw.hasSuffix("/") { raw.removeLast() }
-        guard let url = URL(string: raw), let scheme = url.scheme, ["http", "https"].contains(scheme.lowercased()), url.host != nil else {
+        guard let url = URL(string: raw),
+              let scheme = url.scheme?.lowercased(),
+              ["http", "https"].contains(scheme),
+              let host = url.host?.lowercased(),
+              url.user == nil,
+              url.password == nil,
+              url.query == nil,
+              url.fragment == nil else {
+            return nil
+        }
+        if scheme == "http" && !["localhost", "127.0.0.1", "::1"].contains(host) {
             return nil
         }
         return url

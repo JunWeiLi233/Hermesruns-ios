@@ -729,6 +729,6 @@ enum HermesPreviewFixtures {
           ]
         }
         """
-        return try! JSONDecoder().decode(HermesTodayDashboard.self, from: Data(json.utf8))
+        return (try? JSONDecoder().decode(HermesTodayDashboard.self, from: Data(json.utf8))) ?? HermesTodayDashboard()
     }()
 }

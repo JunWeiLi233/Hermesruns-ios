@@ -61,6 +61,12 @@ final class HermesRunsTests: XCTestCase {
         XCTAssertEqual(HermesAPIClient.normalizedURL("localhost:8080")?.absoluteString, "http://localhost:8080")
     }
 
+    func testBaseURLNormalizationRequiresHTTPSOutsideLoopback() {
+        XCTAssertNotNil(HermesAPIClient.normalizedURL("https://api.example.com"))
+        XCTAssertNil(HermesAPIClient.normalizedURL("http://api.example.com"))
+        XCTAssertNotNil(HermesAPIClient.normalizedURL("http://127.0.0.1:8080"))
+    }
+
     func testMusclePlanDecodesRunnerContextAndSessionLibrary() throws {
         let data = #"{"weekContext":{"volumeKm7d":28.5,"loadStatus":"STABLE","recommendedSessionsPerWeek":2},"days":[{"date":"2026-08-27","dayLabel":"Thursday","run":{"workoutType":"EASY","plannedDistanceKm":6.0},"strength":{"title":"Runner foundation","durationMinutes":25}}],"sessions":[{"title":"Runner foundation","durationMinutes":25,"blocks":[{"title":"Core","exercises":[{"name":"Dead bug","sets":3,"repsOrDuration":"8 / side"}]}]}],"todayCheckIn":{"runType":"EASY","entryState":"ACTUAL","distanceKm":5.5,"durationMinutes":30}}"#.data(using: .utf8)!
         let plan = try JSONDecoder().decode(HermesMusclePlan.self, from: data)
